@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculator</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#222">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #333;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
+      display: flex;
+      gap: 20px;
+    }
+    .calculator {
+      display: grid;
+      grid-template-columns: repeat(4, 70px);
+      gap: 10px;
+    }
+    input {
+      grid-column: span 4;
+      height: 50px;
+      font-size: 24px;
+      text-align: right;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      height: 60px;
+      font-size: 20px;
+      border: none;
+      border-radius: 8px;
+      background: #444;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover { background: #666; }
+    .history {
+      width: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+      background: #111;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .history h3 { margin-top: 0; }
+    .history p { margin: 5px 0; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div>
+      <form action="/calculate" method="get">
+        <div class="calculator">
+          <input type="text" id="display" name="expression" readonly>
+          <button type="button" onclick="append('7')">7</button>
+          <button type="button" onclick="append('8')">8</button>
+          <button type="button" onclick="append('9')">9</button>
+          <button type="button" onclick="append('/')">/</button>
+
+          <button type="button" onclick="append('4')">4</button>
+          <button type="button" onclick="append('5')">5</button>
+          <button type="button" onclick="append('6')">6</button>
+          <button type="button" onclick="append('*')">*</button>
+
+          <button type="button" onclick="append('1')">1</button>
+          <button type="button" onclick="append('2')">2</button>
+          <button type="button" onclick="append('3')">3</button>
+          <button type="button" onclick="append('-')">-</button>
+
+          <button type="button" onclick="append('0')">0</button>
+          <button type="button" onclick="append('.')">.</button>
+          <button type="button" onclick="calculate()">=</button>
+          <button type="button" onclick="append('+')">+</button>
+
+          <button type="button" onclick="clearDisplay()" style="grid-column: span 4; background:#b33;">C</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 🔹 History Panel -->
+    <div class="history" id="history">
+      <h3>History</h3>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById("display");
+    const historyList = document.getElementById("history-list");
+
+    // Load history from LocalStorage on page load
+    let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
+    renderHistory();
+
+    function append(value) {
+      display.value += value;
+    }
+
+    function clearDisplay() {
+      display.value = "";
+    }
+
+    function calculate() {
+      try {
+        const expr = display.value;
+        const result = eval(expr); // simple eval for demo (backend से भी कर सकते हो)
+        display.value = result;
+
+        // Save to history
+        const entry = expr + " = " + result;
+        history.push(entry);
+        localStorage.setItem("calcHistory", JSON.stringify(history));
+        renderHistory();
+      } catch (e) {
+        display.value = "Error";
+      }
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = "";
+      history.forEach(item => {
+        const p = document.createElement("p");
+        p.textContent = item;
+        historyList.appendChild(p);
+      });
+    }
+
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log("Service Worker registered"));
+    }
+  </script>
+</body>
+</html>
