@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <title>Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
 <style>
   body {
     background: #181818;
@@ -200,8 +197,12 @@
   /* Mobile styles */
   @media (max-width: 600px) {
     body {
-      align-items: flex-end;
       padding: 0 3vw;
+      display: flex;
+        align-items: center;
+        padding: 0 3vw;
+        justify-content: center;
+}
     }
     .calculator {
       width: 100vw;
@@ -311,7 +312,7 @@
   <div class="calculator">
     <div class="display-wrapper">
       <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-      <input type="text" class="display" id="display" readonly>
+      <input type="text" class="display" id="display">
     </div>
 
     <div class="keys">
